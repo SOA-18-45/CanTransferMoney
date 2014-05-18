@@ -89,6 +89,10 @@ namespace MinisterstwoClient
         
     }
 
+    public class historyItem
+    {
+
+    }
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class MoneyTransfer : ICanTransferMoney
     {

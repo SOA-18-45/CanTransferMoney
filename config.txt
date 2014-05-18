@@ -1,2 +1,3 @@
 nazwaSerwisu=ICanTransferMoney=
-adresSerwisu=localhost:11900/ICanTransferMoney=
+adresSerwisu=net.tcp://localhost:11910/ICanTrasferMoney=
+=net.tcp://localhost:11900/IServiceRepository=
