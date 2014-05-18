@@ -1,0 +1,2 @@
+nazwaSerwisu=ICanTransferMoney=
+adresSerwisu=localhost:11900/ICanTransferMoney=
