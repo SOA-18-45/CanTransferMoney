@@ -7,7 +7,7 @@ Twórcy
  - Gieroń
  - Pilarczyk
 
-Opis
+Konfiguracja projektu
 ---
 
-Przyjmuje dwa id kont i ma przelać pieniądze z jednego konta do drugiego. Konto ma mieć atrybut z ilością środków na koncie.
+ - Należy dodać referencje do plików związanych z NHibernate. Znajdują się one w katalogu libs/
