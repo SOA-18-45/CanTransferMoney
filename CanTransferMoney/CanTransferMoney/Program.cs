@@ -7,13 +7,15 @@ using System.Runtime.Serialization;
 using System.ServiceModel.Description;
 using System.Web;
 using System.Timers;
+using Contracts;
 
 namespace CanTransferMoney
 {
     class Config
     {
         public const string ConfigSrc = @"..\..\..\..\config.txt";
-        public const string ServiceRepositoryURI = @"net.tcp://localhost:11900/IServiceRepository";
+        public const string ServiceRepositoryURI = "net.tcp://localhost:11900/IServiceRepository";
+        public const string CanTransferMoneyURI = "net.tcp://localhost:11910/ICanTrasferMoney";
     }
 
     class Program
@@ -31,7 +33,7 @@ namespace CanTransferMoney
             MoneyTransfer transferMoney = new MoneyTransfer();
 
             //create service host of transferMoney object
-            ServiceHost sh = new ServiceHost(transferMoney, new Uri[] { new Uri("net.tcp://localhost:11910/ICanTrasferMoney") });
+            ServiceHost sh = new ServiceHost(transferMoney, new Uri[] { new Uri(Config.CanTransferMoneyURI) });
 
             ServiceMetadataBehavior metadata = sh.Description.Behaviors.Find<ServiceMetadataBehavior>();
 
@@ -59,7 +61,7 @@ namespace CanTransferMoney
             Logger.log("Zarejestrowano w ServiceRepository");
 
             //enable imAlive method every 5 seconds
-            var timer = new System.Threading.Timer(e => imAlive(serviceRepository, serviceParameters), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            var timer = new System.Threading.Timer(e => imAlive(serviceRepository), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
 
             //transferMoney.TransferMoney("123", "234", 150.00);
@@ -67,31 +69,11 @@ namespace CanTransferMoney
             Console.ReadLine();
         }
 
-        private static void imAlive(IServiceRepository serviceRepository, string[] serviceParameters)
+        private static void imAlive(IServiceRepository serviceRepository)
         {
-            serviceRepository.isAlive(serviceParameters[1]);
+            serviceRepository.isAlive(Config.ServiceRepositoryURI);
             Logger.log("Wysyłanie sygnału IamAlive");
         }
-    }
-
-    [ServiceContract]
-    public interface ICanTransferMoney
-    {
-        [OperationContract]
-        int TransferMoney(string AccountNumber1, string AccountNumber2, double value); //pozwala na wykonanie przelewu na podstawie numeru kont
-        
-        [OperationContract]
-        int TransferMoneyGuid(Guid AccountGuid1, Guid AccountGuid2, decimal value); // pozwala na wykonanie przelewu na podstawie numeru Guid kont
-
-        [OperationContract]
-        int TransferHistoryAccountString(DateTime DateFrom, DateTime DateTo, String AccountNumber); // pozwala na zwrócenie historii przelewów dla danego numeru konta w podanych zakresie czasowym
-
-        [OperationContract]
-        int TransferHistoryAccountGuid(DateTime DateFrom, DateTime DateTo, Guid AccountGuid); // pozwala na zwrócenie historii przelewów dla danego numeru Guid konta w podanych zakresie czasowym
-
-        [OperationContract]
-        int TransferHistory(DateTime DateFrom, DateTime DateTo); // pozwala na zwrócenie historii przelewów dla WSZYSTKICH kont w podanym zakresie czasowym
-        
     }
 
     public class historyItem
@@ -162,13 +144,13 @@ namespace CanTransferMoney
             }
         }
 
-        public int TransferMoneyGuid(Guid AccountGuid1, Guid AccountGuid2, decimal value)
+        public int TransferMoneyGuid(Guid AccountGuid1, Guid AccountGuid2, double value)
         {
             // pozwala na wykonanie przelewu na podstawie numeru Guid kont
             return 1;
         }
 
-        public int TransferHistoryAccountString(DateTime DateFrom, DateTime DateTo, String AccountNumber)
+        public int TransferHistory(DateTime DateFrom, DateTime DateTo, String AccountNumber)
         {
             // pozwala na zwrócenie historii przelewów dla danego numeru konta w podanych zakresie czasowym
             return 1;
@@ -186,53 +168,5 @@ namespace CanTransferMoney
             // pozwala na zwrócenie historii przelewów dla WSZYSTKICH kont w podanych zakresie czasowym
             return 1;   
         }   
-    }
-
-    [ServiceContract]
-    public interface IServiceRepository
-    {
-        [OperationContract]
-        void registerService(string serviceName, string serviceAddress);
-        [OperationContract]
-        void unregisterService(string serviceName);
-        [OperationContract]
-        string getServiceAddress(string serviceName);
-        [OperationContract]
-        void isAlive(string serviceName);
-    }
-
-    [ServiceContract]
-    public interface IAccountRepository
-    {
-        [OperationContract]
-        string CreateAccount(Guid clientId, AccountDetails details);
-        [OperationContract]
-        AccountDetails GetAccountInformation(string accountNumber);
-        [OperationContract]
-        void UpdateAccountInformation(AccountDetails details);
-        [OperationContract]
-        int test();
-       
-    }
-
-    [DataContract(Namespace = "wybraneslowo")]
-    public class AccountDetails
-    {
-        [DataMember]
-        public Guid Id { get; set; }
-        [DataMember]
-        public Guid ClientId { get; set; }
-        [DataMember]
-        public string AccountNumber { get; set; }
-        [DataMember]
-        public double Money { get; set; }
-        [DataMember]
-        public string Type { get; set; }
-        [DataMember]
-        public double Percentage { get; set; }
-        [DataMember]
-        public DateTime EndDate { get; set; }
-        [DataMember]
-        public DateTime StartDate { get; set; }
     }
 }

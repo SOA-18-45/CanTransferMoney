@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
+using Contracts;
 
 namespace AccountRepository
 {
@@ -54,45 +55,14 @@ namespace AccountRepository
         
     }
 
-    [DataContract(Namespace = "wybraneslowo")]
-    public class AccountDetails
+    public class MockAccountDetaults : AccountDetails
     {
-        [DataMember]
-        public Guid Id { get; set; }
-        [DataMember]
-        public Guid ClientId { get; set; }
-        [DataMember]
-        public string AccountNumber { get; set; }
-        [DataMember]
-        public double Money { get; set; }
-        [DataMember]
-        public string Type { get; set; }
-        [DataMember]
-        public double Percentage { get; set; }
-        [DataMember]
-        public DateTime EndDate { get; set; }
-        [DataMember]
-        public DateTime StartDate { get; set; }        
-
-        public AccountDetails(Guid id, string number, double money)
+        public MockAccountDetaults(Guid id, string number, double money)
         {
             this.Id = id;
             this.AccountNumber = number;
             this.Money = money;
         }
-    }
-
-    [ServiceContract]
-    public interface IAccountRepository
-    {
-        [OperationContract]
-        string CreateAccount(Guid clientId, AccountDetails details);
-
-        [OperationContract]
-        AccountDetails GetAccountInformation(string accountNumber);
-
-        [OperationContract]
-        void UpdateAccountInformation(AccountDetails details);   
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
@@ -102,12 +72,12 @@ namespace AccountRepository
 
         public AccountRepository()
         {
-            accountList.Add(new AccountDetails(new System.Guid(), "123", 453.25));
-            accountList.Add(new AccountDetails(new System.Guid(), "234", 453.25));
-            accountList.Add(new AccountDetails(new System.Guid(), "3234", 453.25));
-            accountList.Add(new AccountDetails(new System.Guid(), "4234", 453.25));
-            accountList.Add(new AccountDetails(new System.Guid(), "5234", 453.25));
-            accountList.Add(new AccountDetails(new System.Guid(), "6234", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "123", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "234", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "3234", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "4234", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "5234", 453.25));
+            accountList.Add(new MockAccountDetaults(new System.Guid(), "6234", 453.25));
         }
 
         public string CreateAccount(Guid clientId, AccountDetails details)
@@ -128,7 +98,7 @@ namespace AccountRepository
             }
 
             // konto nie istnieje
-            return new AccountDetails(new Guid(), "-1", -1);
+            return new MockAccountDetaults(new Guid(), "-1", -1);
         }
 
         public void UpdateAccountInformation(AccountDetails details)
@@ -145,19 +115,6 @@ namespace AccountRepository
                 }
             }
         }
-    }
-
-    [ServiceContract]
-    public interface IServiceRepository
-    {
-        [OperationContract]
-        void registerService(string serviceName, string serviceAddress);
-        [OperationContract]
-        void unregisterService(string serviceName);
-        [OperationContract]
-        string getServiceAddress(string serviceName);
-        [OperationContract]
-        void isAlive(string serviceName);
     }
 }
 

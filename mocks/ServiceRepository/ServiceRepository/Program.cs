@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
+using Contracts;
 
 namespace ServiceRepository
 {
@@ -48,19 +49,6 @@ namespace ServiceRepository
             Console.WriteLine("Serwis uruchomiony...");
             Console.ReadLine();
         }
-    }
-
-    [ServiceContract]
-    public interface IServiceRepository
-    {
-        [OperationContract]
-        void registerService(string serviceName, string serviceAddress);
-        [OperationContract]
-        void unregisterService(string serviceName);
-        [OperationContract]
-        string getServiceAddress(string serviceName);
-        [OperationContract]
-        void isAlive(string serviceName);
     }
 
     [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single)]
