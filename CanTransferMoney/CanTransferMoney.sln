@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinisterstwoClient", "MinisterstwoClient\MinisterstwoClient.csproj", "{90BB870F-D805-43EF-AA9F-EF25BB53E317}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanTransferMoney", "CanTransferMoney\CanTransferMoney.csproj", "{90BB870F-D805-43EF-AA9F-EF25BB53E317}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

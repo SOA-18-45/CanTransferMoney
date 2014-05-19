@@ -6,15 +6,21 @@ using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
 
-namespace BankService
+namespace ServiceRepository
 {
     class Program
     {
+        private const int MaxBufferSize = 10000000;
+        private const int MaxBufferPoolSize = 10000000;
+        private const int MaxReceivedMessageSize = 10000000;
+        private const int ReceiveTimeout = 10000000;
+        private const string ServiceURI = "net.tcp://localhost:11900/IServiceRepository";
+
         static void Main(string[] args)
         {
             ServiceRepository serviceRepository = new ServiceRepository();
-           
-            ServiceHost sh = new ServiceHost(serviceRepository, new Uri[] {new Uri("net.tcp://localhost:11900/IServiceRepository")});
+
+            ServiceHost sh = new ServiceHost(serviceRepository, new Uri[] { new Uri(ServiceURI) });
 
             ServiceMetadataBehavior metadata = sh.Description.Behaviors.Find<ServiceMetadataBehavior>();
            
@@ -29,14 +35,17 @@ namespace BankService
             sh.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexTcpBinding(), "mex");
 
             NetTcpBinding serviceRepositoryBinding = new NetTcpBinding(SecurityMode.None);
-            serviceRepositoryBinding.MaxBufferSize = 10000000;
-            serviceRepositoryBinding.MaxBufferPoolSize = 10000000;
-            serviceRepositoryBinding.MaxReceivedMessageSize = 10000000;
-           // serviceRepositoryBinding.ReceiveTimeout = 100000000;
-           // serviceRepositoryBinding.SendTimeout = new System.TimeSpan(1, 0, 0);
-            sh.AddServiceEndpoint(typeof(IServiceRepository), serviceRepositoryBinding, "net.tcp://localhost:11900/IServiceRepository");
-            sh.Open();
+            serviceRepositoryBinding.MaxBufferSize = MaxBufferSize;
+            serviceRepositoryBinding.MaxBufferPoolSize = MaxBufferPoolSize;
+            serviceRepositoryBinding.MaxReceivedMessageSize = MaxReceivedMessageSize;
+            //serviceRepositoryBinding.ReceiveTimeout = ReceiveTimeout;
+            //serviceRepositoryBinding.SendTimeout = new System.TimeSpan(1, 0, 0);
 
+            sh.AddServiceEndpoint(typeof(IServiceRepository), serviceRepositoryBinding, ServiceURI);
+
+
+            sh.Open();
+            Console.WriteLine("Serwis uruchomiony...");
             Console.ReadLine();
         }
     }
@@ -62,15 +71,14 @@ namespace BankService
         public void registerService(string serviceName, string serviceAddress)
         {
             services.Add(serviceName, serviceAddress);
-            Console.WriteLine("Dodałem takie cuś: {0} {1}", serviceName, serviceAddress);
-            
+            Console.WriteLine("Dodano serwis: {0} {1}", serviceName, serviceAddress);
+
+            Console.WriteLine("Aktualna lista serwisów:");
             foreach (KeyValuePair<string, string> service in services)
             {
                 Console.WriteLine("Key: {0}, Value: {1}",
                 service.Key, service.Value);
             }
-
-
         }
 
         public void unregisterService(string serviceName)
@@ -85,19 +93,9 @@ namespace BankService
 
         public void isAlive(string serviceName)
         {
-            Console.WriteLine(serviceName + " is alive");
+            Console.WriteLine(serviceName + " zgłasza obecność.");
         }
 
-    }
-       
-    [DataContract(Namespace="wybraneslowo")]
-    public class AccountInfo
-    {
-        [DataMember]
-        public string ServiceName { get; set; }
-        [DataMember]
-        public string ServiceAddress { get; set; }
-       
     }
 }
 

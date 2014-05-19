@@ -5,22 +5,21 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ICanTransferMoney")]
+[assembly: AssemblyTitle("CanTransferMoney")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ICanTransferMoney")]
+[assembly: AssemblyProduct("CanTransferMoney")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("34a8a239-c767-4fc2-a0b2-98cea27dfedc")]
+[assembly: Guid("937a265d-88e8-418a-bb17-790920a17ea8")]
 
 // Version information for an assembly consists of the following four values:
 //

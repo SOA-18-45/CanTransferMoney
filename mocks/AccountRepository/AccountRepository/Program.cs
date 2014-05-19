@@ -6,17 +6,20 @@ using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
 
-namespace IAccountRepository
+namespace AccountRepository
 {
     class Program
     {
+        private const int MaxBufferSize = 10000000;
+        private const int MaxBufferPoolSize = 10000000;
+        private const int MaxReceivedMessageSize = 10000000;
+        private const string ServiceRepositoryURI = "net.tcp://localhost:11900/IServiceRepository";
+        private const string AccountRepositoryURI = "net.tcp://localhost:11905/IAccountRepository";
+
         static void Main(string[] args)
         {
-            Program program = new Program();
             AccountRepository accountRepository = new AccountRepository();
-            //ServiceRepository serviceRepository = new ServiceRepository();
-            //accountRepository.DisplayAccountDetails(1);
-            ServiceHost sh = new ServiceHost(accountRepository, new Uri[] { new Uri("net.tcp://localhost:11905/IAccountRepository") });
+            ServiceHost sh = new ServiceHost(accountRepository, new Uri[] { new Uri(AccountRepositoryURI) });
 
             ServiceMetadataBehavior metadata = sh.Description.Behaviors.Find<ServiceMetadataBehavior>();
 
@@ -27,28 +30,26 @@ namespace IAccountRepository
             }
 
             metadata.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-
             sh.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexTcpBinding(), "mex");
 
             NetTcpBinding accountRepositoryBinding = new NetTcpBinding(SecurityMode.None);
-            accountRepositoryBinding.MaxBufferSize = 10000000;
-            accountRepositoryBinding.MaxBufferPoolSize = 10000000;
-            accountRepositoryBinding.MaxReceivedMessageSize = 10000000;
-            sh.AddServiceEndpoint(typeof(IAccountRepository), accountRepositoryBinding, "net.tcp://localhost:11905/IAccountRepository");
-            sh.Open();
+            accountRepositoryBinding.MaxBufferSize = MaxBufferSize;
+            accountRepositoryBinding.MaxBufferPoolSize = MaxBufferPoolSize;
+            accountRepositoryBinding.MaxReceivedMessageSize = MaxReceivedMessageSize;
+            sh.AddServiceEndpoint(typeof(IAccountRepository), accountRepositoryBinding, AccountRepositoryURI);
 
-            ChannelFactory<IServiceRepository> cf = new ChannelFactory<IServiceRepository>(new NetTcpBinding(SecurityMode.None), "net.tcp://localhost:11900/IServiceRepository");
+
+            sh.Open();
+            Console.WriteLine("Serwis uruchomiony...");
+
+            Console.WriteLine("Próba zarejestrowania serwisu w ServiceRepository...");
+            ChannelFactory<IServiceRepository> cf = new ChannelFactory<IServiceRepository>(new NetTcpBinding(SecurityMode.None), ServiceRepositoryURI);
             IServiceRepository serviceRepository = cf.CreateChannel();
 
-            serviceRepository.registerService("IAccountRepository", "net.tcp://localhost:11905/IAccountRepository");
+            serviceRepository.registerService("AccountRepository", AccountRepositoryURI);
+            Console.WriteLine("Serwis zarejestrowany w ServiceRepository.");
 
-
-            AccountDetails nowy = new AccountDetails(new Guid(), "123", 0);
-            nowy = accountRepository.GetAccountInformation("123");
-            Console.WriteLine("account 123 value" +  nowy.Money);
-
-            Console.ReadLine();
-            
+            Console.ReadLine();            
         }
         
     }
@@ -71,8 +72,7 @@ namespace IAccountRepository
         [DataMember]
         public DateTime EndDate { get; set; }
         [DataMember]
-        public DateTime StartDate { get; set; }
-        
+        public DateTime StartDate { get; set; }        
 
         public AccountDetails(Guid id, string number, double money)
         {
@@ -80,8 +80,6 @@ namespace IAccountRepository
             this.AccountNumber = number;
             this.Money = money;
         }
-
-
     }
 
     [ServiceContract]
@@ -94,46 +92,13 @@ namespace IAccountRepository
         AccountDetails GetAccountInformation(string accountNumber);
 
         [OperationContract]
-        void UpdateAccountInformation(AccountDetails details);
-
-        [OperationContract]
-        int test();
-       
+        void UpdateAccountInformation(AccountDetails details);   
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class AccountRepository : IAccountRepository
     {
         List<AccountDetails> accountList = new List<AccountDetails>();
-
-        public int test()
-        {
-            return 1000;
-        }
-        public string CreateAccount(Guid clientId, AccountDetails details)
-        {
-            return "lala";
-        }
-
-        public AccountDetails GetAccountInformation(string accountNumber)
-        {
-            Console.WriteLine("Got AccountInformation request for " + accountNumber);
-            int i = 0;
-            for (i = 0; i < accountList.Count; i++)
-            {
-                if (accountList.ElementAt(i).AccountNumber.Equals(accountNumber))
-                {
-                    Console.WriteLine("Return element at " + i + " with value " + accountList.ElementAt(i).Money);
-                    AccountDetails returnAccountDetails = new AccountDetails(new Guid(), "00", 0);
-                    returnAccountDetails = accountList.ElementAt(i);
-                    return accountList.ElementAt(i);
-                    
-                }
-            }
-
-            return new AccountDetails(new Guid(), "-1", -1);
-
-        }
 
         public AccountRepository()
         {
@@ -145,23 +110,41 @@ namespace IAccountRepository
             accountList.Add(new AccountDetails(new System.Guid(), "6234", 453.25));
         }
 
+        public string CreateAccount(Guid clientId, AccountDetails details)
+        {
+            return "Konto utworzone.";
+        }
+
+        public AccountDetails GetAccountInformation(string accountNumber)
+        {
+            Console.WriteLine("Żądanie informacji o koncie " + accountNumber);
+            for (int i = 0; i < accountList.Count; i++)
+            {
+                if (accountList.ElementAt(i).AccountNumber.Equals(accountNumber))
+                {
+                    Console.WriteLine("Konto istnieje na pozycji " + i + " i ma na koncie " + accountList.ElementAt(i).Money);
+                    return accountList.ElementAt(i);                    
+                }
+            }
+
+            // konto nie istnieje
+            return new AccountDetails(new Guid(), "-1", -1);
+        }
+
         public void UpdateAccountInformation(AccountDetails details)
         {
-            Console.WriteLine("Got UpdateAccountInformation request for " + details.AccountNumber);
+            Console.WriteLine("Żądanie aktualizacji konta " + details.AccountNumber);
             for (int i = 0; i < accountList.Count; i++)
             {
                 if (accountList.ElementAt(i).AccountNumber.Equals(details.AccountNumber))
                 {
                     double oldMoney = accountList.ElementAt(i).Money;
                     accountList.ElementAt(i).Money = details.Money;
-                    Console.WriteLine("Updated " + accountList.ElementAt(i).AccountNumber + " old value " + oldMoney + " present value " + accountList.ElementAt(i).Money);
+                    Console.WriteLine("Zaaktualizowano " + accountList.ElementAt(i).AccountNumber + ". Stara wartość " + oldMoney + ".  Nowa wartość " + accountList.ElementAt(i).Money);
                     break;
                 }
             }
-
         }
-
-
     }
 
     [ServiceContract]

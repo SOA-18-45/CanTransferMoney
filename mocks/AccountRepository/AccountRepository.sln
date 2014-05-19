@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAccountRepository", "IAccountRepository.csproj", "{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountRepository", "AccountRepository\AccountRepository.csproj", "{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

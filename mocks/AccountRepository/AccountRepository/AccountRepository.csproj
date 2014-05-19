@@ -8,7 +8,7 @@
     <ProjectGuid>{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IAccountRepository</RootNamespace>
+    <RootNamespace>AccountRepository</RootNamespace>
     <AssemblyName>IAccountRepository</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
