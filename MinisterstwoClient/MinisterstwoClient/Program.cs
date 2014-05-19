@@ -59,6 +59,7 @@ namespace MinisterstwoClient
 
 
             transferMoney.TransferMoney("123", "234", 150.00);
+            transferMoney.TransferMoney("234", "123", 123.49);
             Console.ReadLine();
         }
 
@@ -85,21 +86,35 @@ namespace MinisterstwoClient
         int TransferHistoryAccountGuid(DateTime DateFrom, DateTime DateTo, Guid AccountGuid); // pozwala na zwrócenie historii przelewów dla danego numeru Guid konta w podanych zakresie czasowym
 
         [OperationContract]
-        int TransferHistory(DateTime DateFrom, DateTime DateTo); // pozwala na zwrócenie historii przelewów dla WSZYSTKICH kont w podanych zakresie czasowym
+        int TransferHistory(DateTime DateFrom, DateTime DateTo); // pozwala na zwrócenie historii przelewów dla WSZYSTKICH kont w podanym zakresie czasowym
         
     }
 
     public class historyItem
     {
+        public DateTime date;
+        public string accountNumber1;
+        public string accountNumber2;
+        public double value;
 
+        public historyItem(DateTime _date, string _accountNumber1, string _accountNumber2, double _value)
+        {
+            date = _date;
+            accountNumber1 = _accountNumber1;
+            accountNumber2 = _accountNumber2;
+            value = _value;
+        }
     }
+
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class MoneyTransfer : ICanTransferMoney
     {
         IServiceRepository serviceRepository;
         IAccountRepository accountRepository;
+        List<historyItem> historyList;
         public MoneyTransfer()
         {
+            historyList = new List<historyItem>();
             string Delimiter = "=";
             string configFile = System.IO.File.ReadAllText(@"D:\config.txt");
             string[] serviceParameters = configFile.Split(new[] { Delimiter }, StringSplitOptions.None);
@@ -112,9 +127,7 @@ namespace MinisterstwoClient
             string IAccountRepositoryAddress = serviceRepository.getServiceAddress("IAccountRepository");
             ChannelFactory<IAccountRepository> cf = new ChannelFactory<IAccountRepository>(new NetTcpBinding(SecurityMode.None), IAccountRepositoryAddress);
             accountRepository = cf.CreateChannel();
-
-            //Console.WriteLine(accountRepository.test());
-            
+                        
             AccountDetails account1 = new AccountDetails();
             Console.WriteLine("Account 1 value before " + account1.Money);
             account1 = accountRepository.GetAccountInformation(AccountNumber1);
@@ -131,6 +144,7 @@ namespace MinisterstwoClient
                 account2.Money += value;
                 accountRepository.UpdateAccountInformation(account1);
                 accountRepository.UpdateAccountInformation(account2);
+                historyList.Add(new historyItem(DateTime.Now, AccountNumber1, AccountNumber2, value));
                 return 0;
             }
         }//pozwala na wykonanie przelewu na podstawie numeru kont
