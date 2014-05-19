@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="CanTransferMoney"
+                   namespace="CanTransferMoney.Domain">
+  <class name="Transaction">
+    <id name="ID">
+      <generator class="guid" />
+    </id>
+    <property name="AccountFrom" />
+    <property name="AccountTo" />
+    <property name="Value" />
+    <property name="DateTime" />
+  </class>
+</hibernate-mapping> 

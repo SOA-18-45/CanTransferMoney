@@ -21,7 +21,7 @@ namespace CanTransferMoney
     class Program
     {
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             //read configuration from file
             string Delimiter = "=";
