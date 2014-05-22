@@ -19,8 +19,8 @@ namespace CanTransferMoney
                 if (_sessionFactory == null)
                 {
                     var configuration = new Configuration();
-                    configuration.Configure();
-                    configuration.AddAssembly(typeof(Transaction).Assembly);
+                    configuration.Configure(@"C:\Users\Mariusz\Desktop\Studia\SOA\CanTransferMoney\CanTransferMoney\CanTransferMoney\hibernate.cfg.xml");
+                    configuration.AddAssembly(typeof(History).Assembly);
                     _sessionFactory = configuration.BuildSessionFactory();
                 }
                 return _sessionFactory;

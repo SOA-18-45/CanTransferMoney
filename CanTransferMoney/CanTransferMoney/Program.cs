@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.ServiceModel.Description;
 using System.Web;
+using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
 using System.Timers;
+using CanTransferMoney.Domain;
 using Contracts;
 
 namespace CanTransferMoney
@@ -21,7 +25,7 @@ namespace CanTransferMoney
     class Program
     {
 
-        static void Main2(string[] args)
+        static void Main(string[] args)
         {
             //read configuration from file
             string Delimiter = "=";
@@ -63,11 +67,12 @@ namespace CanTransferMoney
             //enable imAlive method every 5 seconds
             var timer = new System.Threading.Timer(e => imAlive(serviceRepository), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
-
             //transferMoney.TransferMoney("123", "234", 150.00);
             //transferMoney.TransferMoney("234", "123", 123.49);
             Console.ReadLine();
         }
+
+
 
         private static void imAlive(IServiceRepository serviceRepository)
         {
@@ -94,9 +99,12 @@ namespace CanTransferMoney
 
     public static class Logger
     {
-        public static void log(string Message)
+        public static void log(string message)
         {
-            Console.WriteLine(Message);        
+            System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt", true);
+            file.WriteLine(message);
+            file.Close();
+            Console.WriteLine(message);
         }
     }
 
@@ -115,6 +123,7 @@ namespace CanTransferMoney
 
         public int TransferMoney(string AccountNumber1, string AccountNumber2, double value)
         {
+            LoadHibernateCfg();
             //pozwala na wykonanie przelewu na podstawie numeru kont
 
             string IAccountRepositoryAddress = serviceRepository.getServiceAddress("IAccountRepository");
@@ -139,34 +148,79 @@ namespace CanTransferMoney
                 account2.Money += value;
                 accountRepository.UpdateAccountInformation(account1);
                 accountRepository.UpdateAccountInformation(account2);
-                historyList.Add(new historyItem(DateTime.Now, AccountNumber1, AccountNumber2, value));
+
+                HistoryRepository repo = new HistoryRepository();
+
+                var Transaction = new History
+                {
+                    AccountFrom = AccountNumber1,
+                    AccountTo = AccountNumber2,
+                    Value = value,
+                    TransactionDate = DateTime.Now
+                };
+
+                repo.Add(Transaction);
+
                 return 0;
             }
         }
 
         public int TransferMoneyGuid(Guid AccountGuid1, Guid AccountGuid2, double value)
         {
-            // pozwala na wykonanie przelewu na podstawie numeru Guid kont
+            // AccountRepository nie wystawia metody pozwalającej na pboranie informacji o koncie na podstawie Guid
+            //pozwala na wykonanie przelewu na podstawie numeru kont
             return 1;
         }
 
-        public int TransferHistory(DateTime DateFrom, DateTime DateTo, String AccountNumber)
+        public List<HistoryItem> TransferHistoryForAccount(DateTime DateFrom, DateTime DateTo, String AccountNumber)
         {
-            // pozwala na zwrócenie historii przelewów dla danego numeru konta w podanych zakresie czasowym
-            return 1;
+            LoadHibernateCfg();
+
+            HistoryRepository repo = new HistoryRepository();
+
+            List<HistoryItem> transactions = new List<HistoryItem>();
+
+            transactions = repo.GetHistoryBetweenDatesForAccount(DateFrom, DateTo, AccountNumber);
+            return transactions;
         }
 
-        public int TransferHistoryAccountGuid(DateTime DateFrom, DateTime DateTo, Guid AccountGuid)
+        public List<HistoryItem> TransferHistoryAccountGuid(DateTime DateFrom, DateTime DateTo, Guid AccountGuid)
         {
+            // AccountRepository nie wystawia metody pozwalającej na pboranie informacji o koncie na podstawie Guid
             // pozwala na zwrócenie historii przelewów dla danego numeru Guid konta w podanych zakresie czasowym
-            return 1;
+            return new List<HistoryItem>();
         }
             
         
-        public int TransferHistory(DateTime DateFrom, DateTime DateTo)
+        public List<HistoryItem> TransferHistory(DateTime DateFrom, DateTime DateTo)
         {
-            // pozwala na zwrócenie historii przelewów dla WSZYSTKICH kont w podanych zakresie czasowym
-            return 1;   
-        }   
+            LoadHibernateCfg();
+
+            HistoryRepository repo = new HistoryRepository();
+
+            List<HistoryItem> transactions = new List<HistoryItem>();
+
+            transactions = repo.GetHistoryBetweenDates(DateFrom, DateTo);
+            return transactions;
+        }
+        
+        public static void LoadHibernateCfg()
+        {
+            var cfg = new Configuration();
+            cfg.Configure(@"C:\Users\Mariusz\Desktop\Studia\SOA\CanTransferMoney\CanTransferMoney\CanTransferMoney\hibernate.cfg.xml");
+
+            try
+            {
+                cfg.AddAssembly(typeof(History).Assembly);
+            }
+            catch (Exception e) { Console.WriteLine(e); }
+            try
+            {
+                new SchemaExport(cfg).Execute(true, true, false);
+            }
+            catch (Exception e) { Console.WriteLine(e); }
+        }
+
+
     }
 }
