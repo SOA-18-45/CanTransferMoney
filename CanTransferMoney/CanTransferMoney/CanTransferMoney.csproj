@@ -52,7 +52,7 @@
   <ItemGroup>
     <Reference Include="Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
+      <HintPath>C:\Users\Krzysiu\CanTransferMoney\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections">
       <HintPath>libs\NHibernate\Iesi.Collections.dll</HintPath>

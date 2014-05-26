@@ -18,8 +18,9 @@ namespace CanTransferMoney
     class Config
     {
         public const string ConfigSrc = @"..\..\..\..\config.txt";
-        public const string ServiceRepositoryURI = "net.tcp://localhost:11900/IServiceRepository";
-        public const string CanTransferMoneyURI = "net.tcp://localhost:11910/ICanTrasferMoney";
+        public const string ServiceRepositoryURI = "net.tcp://192.168.0.109:50000/IServiceRepository";
+
+        public const string CanTransferMoneyURI = "net.tcp://192.168.0.95:50005/ICanTrasferMoney";
     }
 
     class Program
@@ -56,7 +57,7 @@ namespace CanTransferMoney
 
             //connect to IServiceRepository service
             Logger.log("Próba rejestracji w ServiceRepository");
-            Logger.log(serviceParameters[5]);
+           // Logger.log(serviceParameters[5]);
             ChannelFactory<IServiceRepository> cf = new ChannelFactory<IServiceRepository>(new NetTcpBinding(SecurityMode.None), Config.ServiceRepositoryURI);
             IServiceRepository serviceRepository = cf.CreateChannel();
             
@@ -66,8 +67,19 @@ namespace CanTransferMoney
 
             //enable imAlive method every 5 seconds
             var timer = new System.Threading.Timer(e => imAlive(serviceRepository), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            /*
+            IAccountRepository accountRepository;
+            string IAccountRepositoryAddress = serviceRepository.getServiceAddress("IAccountRepository");
 
-            //transferMoney.TransferMoney("123", "234", 150.00);
+            string AccountNumber1 = "1111";
+            Console.WriteLine(IAccountRepositoryAddress);
+            ChannelFactory<IAccountRepository> cf2 = new ChannelFactory<IAccountRepository>(new NetTcpBinding(SecurityMode.None), IAccountRepositoryAddress);
+            accountRepository = cf2.CreateChannel();
+
+            AccountDetails account1 = accountRepository.GetAccountInformation(AccountNumber1);*/
+
+            //Console.WriteLine(account1.Money);
+            transferMoney.TransferMoney("1111", "2222", 150.00);
             //transferMoney.TransferMoney("234", "123", 123.49);
             Console.ReadLine();
         }
@@ -207,7 +219,7 @@ namespace CanTransferMoney
         public static void LoadHibernateCfg()
         {
             var cfg = new Configuration();
-            cfg.Configure(@"C:\Users\Mariusz\Desktop\Studia\SOA\CanTransferMoney\CanTransferMoney\CanTransferMoney\hibernate.cfg.xml");
+            cfg.Configure(@"D:\SOA_lab\CanTransferMoney\CanTransferMoney\CanTransferMoney\hibernate.cfg.xml");
 
             try
             {

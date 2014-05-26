@@ -1,2 +1,2 @@
 nazwaSerwisu=ICanTransferMoney=
-adresSerwisu=localhost:11900/ICanTransferMoney=
+adresSerwisu=192.168.0.95:50005/ICanTransferMoney=

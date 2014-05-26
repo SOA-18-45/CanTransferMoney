@@ -13,4 +13,14 @@ namespace CanTransferMoney.Domain
         public virtual double Value { get; set; }
         public virtual DateTime TransactionDate { get; set; }
     }
+
+    public static class Extensions
+    {
+        public static historyItem ToHistoryItem(this History h)
+        {
+            //var h = new History();
+            //h.ToHistoryItem();
+            return new historyItem();
+        }
+    }
 }
