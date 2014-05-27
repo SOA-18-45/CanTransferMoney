@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountRepository", "AccountRepository\AccountRepository.csproj", "{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountRepositoryTest", "AccountRepositoryTest\AccountRepositoryTest.csproj", "{75C98E58-F484-4B03-BF2E-8F63D26C6F33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}.Debug|x86.Build.0 = Debug|x86
 		{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}.Release|x86.ActiveCfg = Release|x86
 		{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}.Release|x86.Build.0 = Release|x86
+		{75C98E58-F484-4B03-BF2E-8F63D26C6F33}.Debug|x86.ActiveCfg = Debug|x86
+		{75C98E58-F484-4B03-BF2E-8F63D26C6F33}.Debug|x86.Build.0 = Debug|x86
+		{75C98E58-F484-4B03-BF2E-8F63D26C6F33}.Release|x86.ActiveCfg = Release|x86
+		{75C98E58-F484-4B03-BF2E-8F63D26C6F33}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

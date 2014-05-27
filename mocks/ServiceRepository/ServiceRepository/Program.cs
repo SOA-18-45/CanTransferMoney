@@ -11,20 +11,67 @@ namespace ServiceRepository
 {
     class Program
     {
-        private const int MaxBufferSize = 10000000;
-        private const int MaxBufferPoolSize = 10000000;
-        private const int MaxReceivedMessageSize = 10000000;
-        private const int ReceiveTimeout = 10000000;
-        private const string ServiceURI = "net.tcp://localhost:11900/IServiceRepository";
 
         static void Main(string[] args)
         {
             ServiceRepository serviceRepository = new ServiceRepository();
+            ServiceHost sh = configureServiceHost(serviceRepository, Config.ServiceURI);
 
-            ServiceHost sh = new ServiceHost(serviceRepository, new Uri[] { new Uri(ServiceURI) });
+            int state = 0;
+            int input = 0;
+            bool breakLoop = false;
+
+            while(true) {
+                Console.WriteLine("Co chcesz zrobic?");
+                if (state == 0) Console.WriteLine("(1) Uruchom serwis");
+                if (state == 1 || state == 3) Console.WriteLine("(2) Zatrzymaj serwis");
+                if (state == 1) Console.WriteLine("(3) Wyłącz obsługę isAlive");
+                if (state == 3) Console.WriteLine("(4) Włącz obsługę isAlive");
+                Console.WriteLine("(0) Zakończ");
+
+                input = Convert.ToInt32(Console.ReadLine());
+                switch (input)
+                {
+                    case 1:
+                        sh = configureServiceHost(serviceRepository, Config.ServiceURI);
+                        sh.Open();
+                        Console.WriteLine("Serwis uruchomiony.");
+                        state = input;
+                        break;
+                    case 2:
+                        sh.Close();
+                        Console.WriteLine("Serwis zatrzymany");
+                        state = 0;
+                        break;
+                    case 3:
+                        serviceRepository.disableIsAlive();
+                        Console.WriteLine("isAlive wyłączony");
+                        state = input;
+                        break;
+                    case 4:
+                        serviceRepository.enableIsAlive();
+                        Console.WriteLine("isAlive włłączony");
+                        state = 1;
+                        break;
+                    case 0:
+                        breakLoop = true;
+                        break;
+                    default:
+                        Console.WriteLine("Nie rozpoznano polecenia");
+                    break;
+                }
+                Console.WriteLine();
+
+                if (breakLoop) break;
+            };
+        }
+
+        static ServiceHost configureServiceHost(Object repository, string uri)
+        {
+            ServiceHost sh = new ServiceHost(repository, new Uri[] { new Uri(uri) });
 
             ServiceMetadataBehavior metadata = sh.Description.Behaviors.Find<ServiceMetadataBehavior>();
-           
+
             if (metadata == null)
             {
                 metadata = new ServiceMetadataBehavior();
@@ -36,54 +83,14 @@ namespace ServiceRepository
             sh.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexTcpBinding(), "mex");
 
             NetTcpBinding serviceRepositoryBinding = new NetTcpBinding(SecurityMode.None);
-            serviceRepositoryBinding.MaxBufferSize = MaxBufferSize;
-            serviceRepositoryBinding.MaxBufferPoolSize = MaxBufferPoolSize;
-            serviceRepositoryBinding.MaxReceivedMessageSize = MaxReceivedMessageSize;
-            //serviceRepositoryBinding.ReceiveTimeout = ReceiveTimeout;
-            //serviceRepositoryBinding.SendTimeout = new System.TimeSpan(1, 0, 0);
+            serviceRepositoryBinding.MaxBufferSize = Config.MaxBufferSize;
+            serviceRepositoryBinding.MaxBufferPoolSize = Config.MaxBufferPoolSize;
+            serviceRepositoryBinding.MaxReceivedMessageSize = Config.MaxReceivedMessageSize;
 
-            sh.AddServiceEndpoint(typeof(IServiceRepository), serviceRepositoryBinding, ServiceURI);
+            sh.AddServiceEndpoint(typeof(IServiceRepository), serviceRepositoryBinding, uri);
 
-
-            sh.Open();
-            Console.WriteLine("Serwis uruchomiony...");
-            Console.ReadLine();
+            return sh;
         }
-    }
-
-    [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single)]
-    public class ServiceRepository : IServiceRepository
-    {
-        Dictionary<string, string> services = new Dictionary<string, string>();
-
-        public void registerService(string serviceName, string serviceAddress)
-        {
-            services.Add(serviceName, serviceAddress);
-            Console.WriteLine("Dodano serwis: {0} {1}", serviceName, serviceAddress);
-
-            Console.WriteLine("Aktualna lista serwisów:");
-            foreach (KeyValuePair<string, string> service in services)
-            {
-                Console.WriteLine("Key: {0}, Value: {1}",
-                service.Key, service.Value);
-            }
-        }
-
-        public void unregisterService(string serviceName)
-        {
-            services.Remove(serviceName);
-        }
-
-        public string getServiceAddress(string serviceName)
-        {
-            return services[serviceName];
-        }
-
-        public void isAlive(string serviceName)
-        {
-            Console.WriteLine(serviceName + " zgłasza obecność.");
-        }
-
     }
 }
 

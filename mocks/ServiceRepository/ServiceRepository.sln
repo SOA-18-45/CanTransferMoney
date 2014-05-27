@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceRepository", "ServiceRepository\ServiceRepository.csproj", "{262097F3-3400-48BC-B31A-315FD7C637E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceRepositoryTest", "ServiceRepositoryTest\ServiceRepositoryTest.csproj", "{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{262097F3-3400-48BC-B31A-315FD7C637E7}.Debug|x86.Build.0 = Debug|x86
 		{262097F3-3400-48BC-B31A-315FD7C637E7}.Release|x86.ActiveCfg = Release|x86
 		{262097F3-3400-48BC-B31A-315FD7C637E7}.Release|x86.Build.0 = Release|x86
+		{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}.Debug|x86.ActiveCfg = Debug|x86
+		{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}.Debug|x86.Build.0 = Debug|x86
+		{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}.Release|x86.ActiveCfg = Release|x86
+		{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

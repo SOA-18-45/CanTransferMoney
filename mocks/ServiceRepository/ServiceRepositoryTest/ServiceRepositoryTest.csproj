@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AA1A87D6-2797-4D3A-9ABB-B6880FCC2BCC}</ProjectGuid>
+    <ProjectGuid>{A533A270-2ECC-4E08-AB61-CEB58F9D7FDB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AccountRepository</RootNamespace>
-    <AssemblyName>IAccountRepository</AssemblyName>
+    <RootNamespace>ServiceRepositoryTest</RootNamespace>
+    <AssemblyName>ServiceRepositoryTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -34,14 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
+    <Reference Include="Contracts">
+      <HintPath>..\ServiceRepository\bin\Debug\Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceRepository">
+      <HintPath>..\ServiceRepository\bin\Debug\ServiceRepository.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,9 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountRepository.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="MockAccountDetails.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
