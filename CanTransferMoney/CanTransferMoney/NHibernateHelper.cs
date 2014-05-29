@@ -19,7 +19,7 @@ namespace CanTransferMoney
                 if (_sessionFactory == null)
                 {
                     var configuration = new Configuration();
-                    configuration.Configure(@"D:\SOA_lab\CanTransferMoney\CanTransferMoney\CanTransferMoney\Transaction.sdf");
+                    configuration.Configure(Config.getHibernatePath());
                     configuration.AddAssembly(typeof(History).Assembly);
                     _sessionFactory = configuration.BuildSessionFactory();
                 }

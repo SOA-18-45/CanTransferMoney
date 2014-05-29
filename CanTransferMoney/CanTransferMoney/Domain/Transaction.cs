@@ -14,6 +14,7 @@ namespace CanTransferMoney.Domain
         public virtual DateTime TransactionDate { get; set; }
     }
 
+    /*
     public static class Extensions
     {
         public static historyItem ToHistoryItem(this History h)
@@ -23,4 +24,5 @@ namespace CanTransferMoney.Domain
             return new historyItem();
         }
     }
+    */
 }

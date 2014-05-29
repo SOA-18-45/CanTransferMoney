@@ -17,6 +17,10 @@ namespace ServiceRepository
 
         public void registerService(string serviceName, string serviceAddress)
         {
+            if (services.ContainsKey(serviceName))
+            {
+                services.Remove(serviceName);
+            }
             services.Add(serviceName, serviceAddress);
             Console.WriteLine("Dodano serwis: {0} {1}", serviceName, serviceAddress);
 

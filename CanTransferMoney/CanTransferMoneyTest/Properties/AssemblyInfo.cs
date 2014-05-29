@@ -5,23 +5,22 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "..\\..\\libs\\log4net\\log4net.xml", Watch = true)]
-//[assembly: log4net.Config.XmlConfigurator]
-[assembly: AssemblyTitle("CanTransferMoney")]
+[assembly: AssemblyTitle("CanTransferMoneyTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CanTransferMoney")]
+[assembly: AssemblyProduct("CanTransferMoneyTest")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("937a265d-88e8-418a-bb17-790920a17ea8")]
+[assembly: Guid("6c413e26-ea0d-48cd-8ae9-7f5b9bb3f8f4")]
 
 // Version information for an assembly consists of the following four values:
 //

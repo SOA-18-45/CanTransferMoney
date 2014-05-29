@@ -16,7 +16,19 @@ namespace AccountRepository
 
         public AccountRepository()
         {
-            accountList.Add(new MockAccountDetails(new System.Guid(), "1111", 1000.0));
+            AccountDetails a1 = new AccountDetails();
+            AccountDetails a2 = new AccountDetails();
+
+            a1.Id = new System.Guid();
+            a1.AccountNumber = "1111";
+            a1.Money = 1000.0;
+
+            a2.Id = new System.Guid();
+            a2.AccountNumber = "2222";
+            a2.Money = 1000.0;
+
+            accountList.Add(a1);
+            accountList.Add(a2);
         }
 
         public string CreateAccount(Guid clientId, AccountDetails details)
@@ -24,6 +36,19 @@ namespace AccountRepository
             return "";
         }
 
+        public List<AccountDetails> GetAllAccounts()
+        {
+            List<AccountDetails> list = new List<AccountDetails>();
+
+            return list;
+        }
+
+        public List<AccountDetails> GetAccountsById(System.Guid clientId) {    
+            List<AccountDetails> list = new List<AccountDetails>();
+
+            return list;
+        }
+        
         public AccountDetails GetAccountInformation(string accountNumber)
         {
             Console.WriteLine("Żądanie informacji o koncie " + accountNumber);
@@ -32,15 +57,17 @@ namespace AccountRepository
                 if (accountList.ElementAt(i).AccountNumber.Equals(accountNumber))
                 {
                     Console.WriteLine("Konto istnieje na pozycji " + i + " i ma na koncie " + accountList.ElementAt(i).Money);
-                    return accountList.ElementAt(i);
+                    return (AccountDetails) accountList.ElementAt(i);
                 }
             }
+
+            Console.WriteLine("Test");
 
             // konto nie istnieje
             return null;
         }
 
-        public void UpdateAccountInformation(AccountDetails details)
+        public bool UpdateAccountInformation(AccountDetails details)
         {
             Console.WriteLine("Żądanie aktualizacji konta " + details.AccountNumber);
             for (int i = 0; i < accountList.Count; i++)
@@ -53,6 +80,8 @@ namespace AccountRepository
                     break;
                 }
             }
+
+            return true;
         }
     }
 }

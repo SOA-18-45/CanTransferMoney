@@ -4,7 +4,7 @@
     <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
     <property name="dialect">NHibernate.Dialect.MsSqlCeDialect</property>
     <property name="connection.driver_class">NHibernate.Driver.SqlServerCeDriver</property>
-    <property name="connection.connection_string">Data Source=C:\Users\Mariusz\Desktop\Studia\SOA\CanTransferMoney\CanTransferMoney\CanTransferMoney\Transaction.sdf</property>
+    <property name="connection.connection_string">Data Source=..\..\Transaction.sdf</property>
 
     <property name="show_sql">true</property>
   </session-factory>

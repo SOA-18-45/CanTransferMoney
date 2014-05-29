@@ -10,7 +10,9 @@ namespace AccountRepository
         public const int MaxBufferSize = 10000000;
         public const int MaxBufferPoolSize = 10000000;
         public const int MaxReceivedMessageSize = 10000000;
-        public const string ServiceRepositoryURI = "net.tcp://localhost:11900/IServiceRepository";
-        public const string AccountRepositoryURI = "net.tcp://localhost:11905/IAccountRepository";
+        public static TimeSpan ReceiveTimeout = new TimeSpan(0, 5, 0);
+        public static TimeSpan SendTimeout = new TimeSpan(0, 5, 0);
+        public const string ServiceRepositoryURI = "net.tcp://localhost:11902/IServiceRepository";
+        public const string AccountRepositoryURI = "net.tcp://localhost:11900/IAccountRepository";
     }
 }

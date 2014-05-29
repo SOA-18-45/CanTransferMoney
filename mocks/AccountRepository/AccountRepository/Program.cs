@@ -37,9 +37,6 @@ namespace AccountRepository
             sh.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexTcpBinding(), "mex");
 
             NetTcpBinding accountRepositoryBinding = new NetTcpBinding(SecurityMode.None);
-            accountRepositoryBinding.MaxBufferSize = Config.MaxBufferSize;
-            accountRepositoryBinding.MaxBufferPoolSize = Config.MaxBufferPoolSize;
-            accountRepositoryBinding.MaxReceivedMessageSize = Config.MaxReceivedMessageSize;
             sh.AddServiceEndpoint(typeof(IAccountRepository), accountRepositoryBinding, Config.AccountRepositoryURI);
         
             return sh;

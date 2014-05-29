@@ -22,13 +22,35 @@ namespace CanTransferMoney
             }
         }
 
-        public List<History> GetHistoryByAccountNumber(string AccountNumber)
+        public List<HistoryItem> toHistoryItem(List<History> items)
+        {
+            List<HistoryItem> output = new List<HistoryItem>();
+            for (int i = 0; i < items.Count; i++)
+            {
+                output.Add(toHistoryItem(items.ElementAt(i)));
+            }
+            return output;
+        }
+
+        public HistoryItem toHistoryItem(History item)
+        {
+            HistoryItem historyItem = new HistoryItem();
+            historyItem.ID = item.ID;
+            historyItem.AccountFrom = item.AccountFrom;
+            historyItem.AccountTo = item.AccountTo;
+            historyItem.TransactionDate = item.TransactionDate;
+            historyItem.Value = item.Value;
+
+            return historyItem;
+        }
+
+        public List<HistoryItem> GetHistoryByAccountNumber(string AccountNumber)
         {
             using (ISession session = NHibernateHelper.OpenSession())
             {
                 List<History> results = new List<History>();
                 results = (List<History>) session.QueryOver<History>().Where(x => (x.AccountFrom == AccountNumber || x.AccountTo == AccountNumber)).List<History>();
-                return results;
+                return toHistoryItem(results);
             }
         }
 
@@ -36,9 +58,9 @@ namespace CanTransferMoney
         {
             using (ISession session = NHibernateHelper.OpenSession())
             {
-                List<HistoryItem> results = new List<HistoryItem>();
-                results = (List<HistoryItem>) session.QueryOver<History>().Where(x => (x.TransactionDate >= DateFrom && x.TransactionDate <= DateTo && (x.AccountFrom == AccountNumber || x.AccountTo == AccountNumber))).List<History>();
-                return results;
+                List<History> results = new List<History>();
+                results = (List<History>) session.QueryOver<History>().Where(x => (x.TransactionDate >= DateFrom && x.TransactionDate <= DateTo && (x.AccountFrom == AccountNumber || x.AccountTo == AccountNumber))).List<History>();
+                return toHistoryItem(results);
             }
         }
 
@@ -46,9 +68,9 @@ namespace CanTransferMoney
         {
             using (ISession session = NHibernateHelper.OpenSession())
             {
-                List<HistoryItem> results = new List<HistoryItem>();
-                results = (List<HistoryItem>)session.QueryOver<History>().Where(x => (x.TransactionDate >= DateFrom && x.TransactionDate <= DateTo)).List<History>();
-                return results;
+                List<History> results = new List<History>();
+                results = (List<History>)session.QueryOver<History>().Where(x => (x.TransactionDate >= DateFrom && x.TransactionDate <= DateTo)).List<History>();
+                return toHistoryItem(results);
             }
         }
 

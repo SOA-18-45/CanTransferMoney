@@ -52,10 +52,13 @@
   <ItemGroup>
     <Reference Include="Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\Krzysiu\CanTransferMoney\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
+      <HintPath>..\..\..\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections">
       <HintPath>libs\NHibernate\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>libs\log4net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
       <HintPath>libs\NHibernate\NHibernate.dll</HintPath>
@@ -77,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.cs" />
     <Compile Include="Domain\Transaction.cs" />
     <Compile Include="NHibernateHelper.cs" />
     <Compile Include="Program.cs" />
@@ -96,7 +100,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="hibernate.cfg.xml" />
-    <Content Include="log.txt" />
+    <Content Include="log4net.xml" />
     <Content Include="Transaction.sdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
