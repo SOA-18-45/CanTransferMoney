@@ -50,6 +50,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="clrzmq">
+      <HintPath>C:\Users\Krzysiu\Downloads\ZeroMq_Example\ZeroMq_Example\lib\clrzmq.dll</HintPath>
+    </Reference>
+    <Reference Include="clrzmq-ext">
+      <HintPath>C:\Users\Krzysiu\Downloads\ZeroMq_Example\ZeroMq_Example\lib\clrzmq-ext.dll</HintPath>
+    </Reference>
     <Reference Include="Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Contracts\Contracts\Contracts\bin\Debug\Contracts.dll</HintPath>
@@ -59,6 +65,10 @@
     </Reference>
     <Reference Include="log4net">
       <HintPath>libs\log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.3.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\Krzysiu\Downloads\Json40r3\Bin\Net\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
       <HintPath>libs\NHibernate\NHibernate.dll</HintPath>
@@ -100,7 +110,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="hibernate.cfg.xml" />
-    <Content Include="log4net.xml" />
+    <Content Include="Newtonsoft.Json.dll" />
     <Content Include="Transaction.sdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -14,19 +14,23 @@ namespace CanTransferMoney
         public static TimeSpan SendTimeout = new TimeSpan(0, 5, 0);
 
         public const string ServiceName = "CanTransferMoney";
-        public const string ServiceRepositoryURI = "net.tcp://localhost:11902/IServiceRepository";
+        public const string ServiceRepositoryURI = "net.tcp://192.168.0.102:50000/IServiceRepository";
+
         public const string CanTransferMoneyURI = "net.tcp://localhost:11901/ICanTransferMoney";
+        public const string CanTransferMoneyHttpURI = "http://localhost:11902/ICanTransferMoney";
+
+
         public const string AccountRepositoryURI = "net.tcp://localhost:11900/IAccountRepository";
         public const string hibernatePath = "..\\..\\hibernate.cfg.xml";
         public const double Timeout = 5000;
         public const string mode = "dev";
 
-        /* mode:
+        /* mode:d
          *  dev:     bez rejestracji w ServiceRepository
          *  prod:    rejestracja w ServiceRepository 
          */
 
-        public const string storage = "memory"; // database, memory
+        public const string storage = "database"; // database, memory
 
         public static string getStorage()
         {
@@ -41,6 +45,11 @@ namespace CanTransferMoney
         public static string getCanTransferMoneyURI()
         {
             return CanTransferMoneyURI;
+        }
+
+        public static string getCanTransferMoneyHttpURI()
+        {
+            return CanTransferMoneyHttpURI;
         }
 
         public static string getAccountRepositoryURI()

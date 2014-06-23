@@ -13,16 +13,23 @@ using System.Timers;
 using CanTransferMoney.Domain;
 using Contracts;
 using log4net;
+using System.Text;
+using System.Threading;
+using Newtonsoft.Json;
+using ZMQ;
+
 namespace CanTransferMoney
 {
     class Program
     {
-        private static readonly log4net.ILog Logger4net = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-       
+        static private bool _stop = false;
+        static private object _locker = new object();
+        static private Thread _workerThread;
         static System.Timers.Timer registerServiceTimer;
         static IServiceRepository serviceRepository;
         static CanTransferMoney canTransferMoney;
         static ServiceHost sh;
+        static ServiceHost shHttp;
 
         static void Main(string[] args)
         {
@@ -79,7 +86,27 @@ namespace CanTransferMoney
                 
                  */
             }
+
+            Start();
+            
             Console.ReadLine();
+        }
+
+        static public void Start()
+        {
+            _workerThread = new Thread(RunZeroMqServer);
+            _workerThread.Start();
+        }
+
+        //metoda Stop zatrzymuje watek sluchajacy na message ZeroMQ
+        static public void Stop()
+        {
+            lock (_locker)
+            {
+                _stop = true;
+            }
+
+            _workerThread.Join();
         }
 
         static void registerService(object sender = null, System.Timers.ElapsedEventArgs e = null)
@@ -87,12 +114,40 @@ namespace CanTransferMoney
             try
             {
                 Logger.log("Próba rejestracji");
-                serviceRepository.registerService(Config.getServiceName(), Config.getCanTransferMoneyURI());
+
+
+                serviceRepository.registerService(Config.getServiceName(), Config.getCanTransferMoneyURI(), "net.tcp");
+                serviceRepository.registerService(Config.getServiceName(), Config.getCanTransferMoneyHttpURI(), "http");
+
+                
                 Logger.log("Serwis zarejestrowano");
+
+                /*   
+                IAccountRepository accountRepository;
+                string IAccountRepositoryAddress = Config.getAccountRepositoryURI();
+
+                string AccountNumber1 = "1111";
+                Console.WriteLine(IAccountRepositoryAddress);
+
+                NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
+
+                binding.MaxBufferSize = Config.MaxBufferSize;
+                binding.MaxBufferPoolSize = Config.MaxBufferPoolSize;
+                binding.MaxReceivedMessageSize = Config.MaxReceivedMessageSize;
+                binding.ReceiveTimeout = Config.ReceiveTimeout;
+                binding.SendTimeout = Config.SendTimeout;
+
+                ChannelFactory<IAccountRepository> cf2 = new ChannelFactory<IAccountRepository>(new NetTcpBinding(SecurityMode.None), IAccountRepositoryAddress);
+                accountRepository = cf2.CreateChannel();
+                AccountDetails account1 = new AccountDetails();
+                account1 = accountRepository.GetAccountInformation(AccountNumber1);
+
+                Console.WriteLine(account1.Money);
+                */
 
                 sendAlive();
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Logger.log("Nie powiodła się rejestracja w serwisie, następna próba za 5 sekund...");
                 connectToServiceRepository();
@@ -130,8 +185,70 @@ namespace CanTransferMoney
             // create endpoint of transferMoney service
             NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
             sh.AddServiceEndpoint(typeof(ICanTransferMoney), binding, Uri);
+
+            string HttpUri = Config.getCanTransferMoneyHttpURI();
+            shHttp = new ServiceHost(canTransferMoney, new Uri[] { new Uri(HttpUri) });
+
+            ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
+            smb.HttpGetEnabled = true;
+            smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+            shHttp.Description.Behaviors.Add(smb);
+            
+
+
         }
 
+        static private void RunZeroMqServer()
+        {
+            // ZMQ Context, server socket
+            using (var context = new Context())
+            using (var server = context.Socket(SocketType.REP))
+            {
+                var bindingAddress = new StringBuilder("tcp://");
+                bindingAddress.Append("127.0.0.1");
+                bindingAddress.Append(":");
+                bindingAddress.Append("11901");
+
+                server.Bind(bindingAddress.ToString());
+
+                while (!_stop)
+                {
+                    string message = server.Recv(Encoding.Unicode, 100);
+                    if (message == null)
+                    {
+                        continue;//nic nie odebral przez 100 ms, wiec nic nie przetwarzamy
+                    }
+                    var response = ProcessMessage(message);
+
+                    server.Send(response, Encoding.Unicode);
+
+                    Thread.Sleep(100);
+                }
+            }
+        }
+
+        static private string ProcessMessage(string message)
+        {
+            var TransferMoneyMessage = JsonConvert.DeserializeObject<ICanTransferMoneyMessage>(message); //deserializacja wiadomosci ogolenej dla AccountRepository Service
+            if (TransferMoneyMessage.Action != "TransferMoney")//Sprawdzenie czy akcja to CreateAccount - jesli nie to rzuca exception bo innych nie obsluguje ten kod
+            {
+                throw new InvalidOperationException(string.Format("Cannot process unknown action {0}",
+                    TransferMoneyMessage.Action));
+            }
+
+            if (TransferMoneyMessage.Action != "TransferMoney")
+            {//Sprawdzenie czy akcja to CreateAccount - jesli nie to rzuca exception bo innych nie obsluguje ten kod
+
+                var createAccountMessage =
+                    JsonConvert.DeserializeObject<TransferMoneyMessage>(TransferMoneyMessage.Arguments); //deserialiazacja argumentow CreateAccountMessage
+                var response = canTransferMoney.TransferMoney(createAccountMessage.AccountNumber1, createAccountMessage.AccountNumber2, createAccountMessage.value); //wywowalnie metody serwisu ktora wczesniej byla dostepna przez WebService.
+                return response.ToString();
+            }
+
+            
+            return "";
+
+        }
 
 
         static void sendAlive(object sender = null, System.Timers.ElapsedEventArgs e = null)
@@ -147,12 +264,16 @@ namespace CanTransferMoney
                 registerServiceTimer.Interval = Config.getTimeout();
                 registerServiceTimer.Start();
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Logger.log("Nie powiodło się wysłanie I-AM-ALIVE");
                 registerService();
             }
         }
+
+        //metoda start tworzy nowy watek na ktorym sluchamy na nowe message pojawiajace sie na naszej kolejce ZeroMQ
+        
+    
     }
     
     public static class Logger
@@ -162,13 +283,27 @@ namespace CanTransferMoney
         public static void log(string message)
         {
             
-          //  System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt", true);
-         //   file.WriteLine(message);
-          //  file.Close();
-          //  Console.WriteLine(message);
+         //   System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt", true);
+        //    file.WriteLine(message);
+         //   file.Close();
+            Console.WriteLine(message);
             Logger4net.Debug(message);
         }
     }
+
+    public class ICanTransferMoneyMessage
+    {
+        public string Action { get; set; }
+        public string Arguments { get; set; }
+    }
+
+    public class TransferMoneyMessage
+    {
+        public string AccountNumber1 { get; set; }
+        public string AccountNumber2 { get; set; }
+        public double value { get; set; }
+    }
+
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class CanTransferMoney : ICanTransferMoney
@@ -187,6 +322,7 @@ namespace CanTransferMoney
             serviceRepository = cf.CreateChannel();
         }
 
+
         public int TransferMoney(string AccountNumber1, string AccountNumber2, double value)
         {
             //pozwala na wykonanie przelewu na podstawie numeru kont
@@ -200,7 +336,7 @@ namespace CanTransferMoney
             }
             
             if (Config.getMode() == "prod") {
-                IAccountRepositoryAddress = serviceRepository.getServiceAddress("IAccountRepository");
+                IAccountRepositoryAddress = serviceRepository.getServiceAddress("IAccountRepository", "net.tcp");
             }
 
             ChannelFactory<IAccountRepository> cf = new ChannelFactory<IAccountRepository>(new NetTcpBinding(SecurityMode.None), IAccountRepositoryAddress);
@@ -325,14 +461,15 @@ namespace CanTransferMoney
             {
                 cfg.AddAssembly(typeof(History).Assembly);
             }
-            catch (Exception e) { Console.WriteLine(e); }
+            catch (System.Exception e) { Console.WriteLine(e); }
             try
             {
                 new SchemaExport(cfg).Execute(true, true, false);
             }
-            catch (Exception e) { Console.WriteLine(e); }
+            catch (System.Exception e) { Console.WriteLine(e); }
         }
 
+   
 
     }
 }
